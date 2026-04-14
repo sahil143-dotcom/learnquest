@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Adaptive Quiz</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background: #0f1634; color: #f6f8ff; }
+    .wrap { padding: 16px; }
+    .card { background: #1c2450; border: 1px solid #313b76; border-radius: 14px; padding: 14px; }
+    .option { margin-top: 8px; padding: 10px; border-radius: 10px; border: 1px solid #3e4a90; cursor: pointer; }
+    .option:hover { background: #273267; }
+    button { margin-top: 10px; border: 0; border-radius: 10px; background: #26d6e7; color: #10203d; padding: 10px 14px; font-weight: 700; }
+    .muted { color: #b9c2ea; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h2>Adaptive Quiz</h2>
+      <p class="muted" id="meta">Career: General · Level 1</p>
+      <p>What is the time complexity of binary search?</p>
+      <div class="option" onclick="answer(false)">O(n)</div>
+      <div class="option" onclick="answer(true)">O(log n)</div>
+      <div class="option" onclick="answer(false)">O(n log n)</div>
+      <button onclick="completeQuiz()">Finish Quiz (+200 XP)</button>
+      <p id="result" class="muted"></p>
+    </div>
+  </div>
+  <script>
+    const data = window.LEARNQUEST_DATA || {};
+    document.getElementById('meta').textContent = `Career: ${data.career || 'General'} · Level ${data.level || 1}`;
+    function answer(isCorrect) {
+      document.getElementById('result').textContent = isCorrect ? 'Correct! +50 XP' : 'Try again.';
+      if (isCorrect && window.Flutter) Flutter.postMessage('xp:50');
+    }
+    function completeQuiz() {
+      if (window.Flutter) Flutter.postMessage('quiz:complete');
+    }
+  </script>
+</body>
+</html>

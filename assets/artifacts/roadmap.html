@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Career Roadmap</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background: #fff8ec; color: #242b44; }
+    .wrap { padding: 16px; }
+    .card { background: #ffffff; border: 1px solid #ffe5bd; border-radius: 14px; padding: 14px; margin-bottom: 10px; }
+    .badge { display: inline-block; border-radius: 999px; background: #fff1da; color: #ce7d00; font-size: 12px; padding: 5px 10px; }
+    .muted { color: #616b86; font-size: 13px; }
+    li { margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h2>Career Roadmap</h2>
+      <span class="badge" id="career">GENERAL</span>
+      <p class="muted">Track milestone progress toward placement-ready skills.</p>
+    </div>
+    <div class="card">
+      <strong>Milestones</strong>
+      <ul id="milestones">
+        <li>Python Basics</li>
+        <li>Data Structures</li>
+        <li>Control Flow</li>
+      </ul>
+    </div>
+  </div>
+  <script>
+    const data = window.LEARNQUEST_DATA || {};
+    document.getElementById('career').textContent = (data.career || 'General').toUpperCase();
+    if (data.completedMilestones) {
+      const items = String(data.completedMilestones).split(',').filter(Boolean);
+      if (items.length > 0) {
+        document.getElementById('milestones').innerHTML = items.map((m) => `<li>${m}</li>`).join('');
+      }
+    }
+  </script>
+</body>
+</html>

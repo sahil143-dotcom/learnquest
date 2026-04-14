@@ -1,0 +1,29 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Flutter (Android Emulator)",
+      "runtimeExecutable": "flutter",
+      "runtimeArgs": ["run", "-d", "emulator-5554"],
+      "port": 8888
+    },
+    {
+      "name": "Flutter (Windows Desktop)",
+      "runtimeExecutable": "flutter",
+      "runtimeArgs": ["run", "-d", "windows"],
+      "port": 8889
+    },
+    {
+      "name": "Flutter Web (Chrome)",
+      "runtimeExecutable": "flutter",
+      "runtimeArgs": ["run", "-d", "chrome", "--web-port", "8080"],
+      "port": 8080
+    },
+    {
+      "name": "Flutter Web (Edge)",
+      "runtimeExecutable": "flutter",
+      "runtimeArgs": ["run", "-d", "edge", "--web-port", "8081"],
+      "port": 8081
+    }
+  ]
+}

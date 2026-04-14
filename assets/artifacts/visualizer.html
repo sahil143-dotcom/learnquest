@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Concept Visualizer</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background: #f3f6ff; color: #20263d; }
+    .wrap { padding: 16px; }
+    .card { background: #fff; border: 1px solid #e6e9ff; border-radius: 14px; padding: 14px; margin-bottom: 12px; }
+    .pill { display: inline-block; padding: 5px 10px; border-radius: 999px; background: #eceefe; color: #635bff; font-size: 12px; font-weight: 700; }
+    ul { padding-left: 18px; line-height: 1.6; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h2>Concept Visualizer</h2>
+      <span class="pill" id="career">General</span>
+      <p>Understand how concepts connect and build upon each other.</p>
+    </div>
+    <div class="card">
+      <strong>Current Path</strong>
+      <ul>
+        <li>Variables and Types</li>
+        <li>Data Structures</li>
+        <li>Control Flow</li>
+        <li>Functions and Scope</li>
+        <li>Error Handling</li>
+      </ul>
+    </div>
+  </div>
+  <script>
+    const data = window.LEARNQUEST_DATA || {};
+    document.getElementById('career').textContent = (data.career || 'General').toUpperCase();
+  </script>
+</body>
+</html>
