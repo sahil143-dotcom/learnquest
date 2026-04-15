@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/theme/app_theme.dart';
 import '../../core/constants/routes.dart';
@@ -23,9 +24,46 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   bool _isLoading = false;
   String? _errorMessage;
 
+  // Saved career path (null = not yet chosen)
+  String? _selectedCareerId;
+  String? _selectedCareerEmoji;
+  String? _selectedCareerTitle;
+
   final _nameController     = TextEditingController();
   final _emailController    = TextEditingController();
   final _passwordController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSelectedCareer();
+  }
+
+  Future<void> _loadSelectedCareer() async {
+    final prefs = await SharedPreferences.getInstance();
+    final id = prefs.getString('selected_career_id');
+    if (id != null && mounted) {
+      setState(() {
+        _selectedCareerId    = id;
+        _selectedCareerEmoji = prefs.getString('selected_career_emoji');
+        _selectedCareerTitle = prefs.getString('selected_career_title');
+      });
+    }
+  }
+
+  Future<void> _clearCareerPath() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('selected_career_id');
+    await prefs.remove('selected_career_emoji');
+    await prefs.remove('selected_career_title');
+    if (mounted) {
+      setState(() {
+        _selectedCareerId    = null;
+        _selectedCareerEmoji = null;
+        _selectedCareerTitle = null;
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -33,6 +71,19 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  // Navigate after login — go straight to roadmap if path already saved
+  void _navigateAfterLogin() {
+    if (_selectedCareerId != null) {
+      Navigator.pushReplacementNamed(
+        context,
+        AppRoutes.roadmapLoading,
+        arguments: _selectedCareerId,
+      );
+    } else {
+      Navigator.pushReplacementNamed(context, AppRoutes.domainSelect);
+    }
   }
 
   // ── Submit (sign up or login) ──────────────────────────────────────────────
@@ -66,7 +117,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       }
 
       if (!mounted) return;
-      Navigator.pushReplacementNamed(context, AppRoutes.domainSelect);
+      _navigateAfterLogin();
     } on FirebaseAuthException catch (e) {
       setState(() => _errorMessage = _friendlyError(e.code));
     } catch (e) {
@@ -91,7 +142,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       }
 
       if (!mounted) return;
-      Navigator.pushReplacementNamed(context, AppRoutes.domainSelect);
+      _navigateAfterLogin();
     } on FirebaseAuthException catch (e) {
       setState(() => _errorMessage = _friendlyError(e.code));
     } catch (e) {
@@ -148,9 +199,10 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header
-                const ScreenTag('Step 1 of 3'),
-                const SizedBox(height: 12),
+                // Header — hide step tag when career is already saved
+                if (_selectedCareerId == null)
+                  const ScreenTag('Step 1 of 3'),
+                if (_selectedCareerId == null) const SizedBox(height: 12),
                 Text(
                   _isSignUp ? 'Create your\naccount ✦' : 'Welcome\nback ✦',
                   style: AppTextStyles.displayMedium,
@@ -160,7 +212,83 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                   'Join 10,000+ students building their future',
                   style: AppTextStyles.bodySmall,
                 ),
-                const SizedBox(height: 28),
+                const SizedBox(height: 20),
+
+                // ── Selected career path card ──────────────────────────────
+                if (_selectedCareerId != null) ...[
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(14, 12, 10, 12),
+                    decoration: BoxDecoration(
+                      color: AppColors.blue.withOpacity(0.07),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                          color: AppColors.blue.withOpacity(0.22), width: 1.5),
+                    ),
+                    child: Row(
+                      children: [
+                        // Emoji bubble
+                        Container(
+                          width: 42,
+                          height: 42,
+                          decoration: BoxDecoration(
+                            color: AppColors.blue.withOpacity(0.12),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Center(
+                            child: Text(
+                              _selectedCareerEmoji ?? '🎯',
+                              style: const TextStyle(fontSize: 20),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        // Path info
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'YOUR SAVED PATH',
+                                style: AppTextStyles.label.copyWith(
+                                  fontSize: 9,
+                                  letterSpacing: 1.4,
+                                  color: AppColors.blue,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                _selectedCareerTitle ?? '',
+                                style: AppTextStyles.headingSmall,
+                              ),
+                            ],
+                          ),
+                        ),
+                        // Change path button
+                        TextButton(
+                          onPressed: _clearCareerPath,
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 6),
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          child: const Text(
+                            'Change\nPath',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.blue,
+                              height: 1.3,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                ] else
+                  const SizedBox(height: 8),
 
                 // ── Error banner ───────────────────────────────────────────
                 if (_errorMessage != null) ...[

@@ -59,21 +59,35 @@ class LearnQuestApp extends StatelessWidget {
         switch (settings.name) {
           case AppRoutes.onboarding:
             page = const OnboardingScreen();
+            break;
+
           case AppRoutes.login:
             page = const AuthScreen();
+            break;
+
           case AppRoutes.domainSelect:
             page = const DomainSelectScreen();
+            break;
+
           case AppRoutes.specialization:
             page = const SpecializationScreen();
+            break;
+
           case AppRoutes.roadmapLoading:
             page = const RoadmapLoadingScreen();
+            break;
+
           case AppRoutes.roadmap:
             page = const RoadmapScreen();
+            break;
+
           case AppRoutes.artifacts:
             final initialArtifact = settings.arguments is ArtifactType
                 ? settings.arguments as ArtifactType
                 : ArtifactType.dashboard;
             page = ArtifactScreen(initialArtifact: initialArtifact);
+            break;
+
           default:
             page = const OnboardingScreen();
         }

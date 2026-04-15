@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/constants/routes.dart';
 import '../../../shared/widgets/glass_card.dart';
@@ -57,6 +58,12 @@ class _SpecializationScreenState extends State<SpecializationScreen>
       context,
       career,
       onChoosePath: () {
+        // Persist the selected career so returning users skip domain selection
+        SharedPreferences.getInstance().then((prefs) {
+          prefs.setString('selected_career_id', career.id);
+          prefs.setString('selected_career_emoji', career.emoji);
+          prefs.setString('selected_career_title', career.title);
+        });
         Navigator.pushNamed(
           context,
           AppRoutes.roadmapLoading,
