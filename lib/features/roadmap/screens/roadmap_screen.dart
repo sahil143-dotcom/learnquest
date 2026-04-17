@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/constants/routes.dart';
 import '../../../shared/widgets/glass_card.dart';
+import '../../../providers/user_provider.dart';
 import '../data/career_data.dart';
 import '../models/career_model.dart';
 
@@ -126,13 +129,14 @@ class _AnimatedDotState extends State<_AnimatedDot>
 
 // ─── RoadmapScreen ────────────────────────────────────────────────────────────
 
-class RoadmapScreen extends StatelessWidget {
+class RoadmapScreen extends ConsumerWidget {
   const RoadmapScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final careerId = ModalRoute.of(context)!.settings.arguments as String;
-    final career = findCareerById(careerId);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final careerId    = ModalRoute.of(context)!.settings.arguments as String;
+    final career      = findCareerById(careerId);
+    final userProgress = ref.watch(userProgressProvider);
 
     int totalMilestones = 0;
     int completedOrActive = 0;
@@ -147,11 +151,6 @@ class RoadmapScreen extends StatelessWidget {
 
     return Scaffold(
       body: GradientBackground(
-        colors: const [
-          Color(0xFFE4F2F8),
-          Color(0xFFD4EADF),
-          Color(0xFFE8F5EE),
-        ],
         child: SafeArea(
           child: Column(
             children: [
@@ -172,24 +171,6 @@ class RoadmapScreen extends StatelessWidget {
                                   size: 14, color: AppColors.text2),
                               SizedBox(width: 6),
                               Text('Back',
-                                  style: TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                      color: AppColors.text2)),
-                            ],
-                          ),
-                        ),
-                        const Spacer(),
-                        _NavButton(
-                          onTap: () => Navigator.pushNamed(
-                              context, AppRoutes.artifacts),
-                          child: const Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text('🧠',
-                                  style: TextStyle(fontSize: 14)),
-                              SizedBox(width: 6),
-                              Text('Artifacts',
                                   style: TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.w600,
@@ -231,7 +212,18 @@ class RoadmapScreen extends StatelessWidget {
                       ],
                     ),
 
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 10),
+
+                    // ── 🔥 Case 1: Streak + Level badge row ───────────────
+                    Row(
+                      children: [
+                        _StreakBadge(streakDays: userProgress.streakDays),
+                        const SizedBox(width: 8),
+                        _LevelBadge(level: userProgress.level),
+                      ],
+                    ),
+
+                    const SizedBox(height: 10),
 
                     // Progress bar
                     _ProgressBar(
@@ -757,6 +749,78 @@ class _MilestoneCardState extends State<_MilestoneCard> {
   }
 }
 
+// ─── Case 1: Streak & Level badges ───────────────────────────────────────────
+
+/// Orange flame pill — shows today's consecutive login streak.
+class _StreakBadge extends StatelessWidget {
+  final int streakDays;
+  const _StreakBadge({required this.streakDays});
+
+  @override
+  Widget build(BuildContext context) {
+    final label = streakDays == 0
+        ? 'Start streak!'
+        : '$streakDays day${streakDays == 1 ? '' : 's'}';
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 6),
+      decoration: BoxDecoration(
+        color: const Color(0xFFE8593C).withOpacity(0.10),
+        border: Border.all(color: const Color(0xFFE8593C).withOpacity(0.28)),
+        borderRadius: BorderRadius.circular(30),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text('🔥', style: TextStyle(fontSize: 13)),
+          const SizedBox(width: 5),
+          Text(
+            label,
+            style: GoogleFonts.inter(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: const Color(0xFFE8593C),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Blue level pill — mirrors the level shown in the Artifact HUD.
+class _LevelBadge extends StatelessWidget {
+  final int level;
+  const _LevelBadge({required this.level});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 6),
+      decoration: BoxDecoration(
+        color: AppColors.blue.withOpacity(0.10),
+        border: Border.all(color: AppColors.blue.withOpacity(0.28)),
+        borderRadius: BorderRadius.circular(30),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text('⚡', style: TextStyle(fontSize: 13)),
+          const SizedBox(width: 5),
+          Text(
+            'Level $level',
+            style: GoogleFonts.inter(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: AppColors.blue,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 // ─── Sub-widgets ──────────────────────────────────────────────────────────────
 
 class _SectionLabel extends StatelessWidget {
@@ -769,7 +833,7 @@ class _SectionLabel extends StatelessWidget {
     return Text(
       text,
       style: AppTextStyles.label.copyWith(
-          color: color, fontSize: 10, letterSpacing: 1.2),
+          color: color, fontSize: 11, letterSpacing: 1.2),
     );
   }
 }

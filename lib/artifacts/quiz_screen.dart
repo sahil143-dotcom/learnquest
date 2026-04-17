@@ -18,7 +18,6 @@ class QuizScreen extends ConsumerWidget {
 
     return Scaffold(
       body: GradientBackground(
-        colors: const [Color(0xFFE8F5EE), Color(0xFFD4EADF), Color(0xFFE4F2F8)],
         child: SafeArea(
           child: Column(
             children: [

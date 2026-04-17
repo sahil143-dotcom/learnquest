@@ -4,15 +4,17 @@
 
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'features/firebase_options.dart';
 import 'core/theme/app_theme.dart';
 import 'core/constants/routes.dart';
 import 'features/onboarding/onboarding_screen.dart';
 import 'features/auth/auth_screen.dart';
+import 'features/auth/welcome_screen.dart';
 import 'features/domain_select/domain_select_screen.dart';
+import 'features/roadmap/screens/branch_select_screen.dart';
 import 'features/roadmap/screens/specialization_screen.dart';
 import 'features/roadmap/screens/roadmap_screen.dart';
 import 'artifacts/artifact_screen.dart';
@@ -26,16 +28,12 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  // ── Check onboarding state ─────────────────────────────────────────────────
-  final prefs = await SharedPreferences.getInstance();
-  final onboardingDone = prefs.getBool('onboarding_done') ?? false;
+  // Sign out any existing session so the auth screen always shows on app open.
+  await FirebaseAuth.instance.signOut();
 
   runApp(
-    // Riverpod scope wraps everything
     ProviderScope(
-      child: LearnQuestApp(
-        startRoute: onboardingDone ? AppRoutes.login : AppRoutes.onboarding,
-      ),
+      child: LearnQuestApp(startRoute: AppRoutes.login),
     ),
   );
 }
@@ -65,8 +63,16 @@ class LearnQuestApp extends StatelessWidget {
             page = const AuthScreen();
             break;
 
+          case AppRoutes.welcome:
+            page = const WelcomeScreen();
+            break;
+
           case AppRoutes.domainSelect:
             page = const DomainSelectScreen();
+            break;
+
+          case AppRoutes.branchSelect:
+            page = const BranchSelectScreen();
             break;
 
           case AppRoutes.specialization:

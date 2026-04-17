@@ -60,7 +60,7 @@ class _DomainSelectScreenState extends State<DomainSelectScreen>
         badge: '✦ Live',
         badgeColor: AppColors.blue,
         isActive: true,
-        onTap: () => Navigator.pushNamed(context, AppRoutes.specialization),
+        onTap: () => Navigator.pushNamed(context, AppRoutes.branchSelect),
       ),
       _DomainItem(
         emoji: '⚖️',
@@ -96,8 +96,6 @@ class _DomainSelectScreenState extends State<DomainSelectScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const ScreenTag('Step 2 of 3'),
-                const SizedBox(height: 12),
                 Text('Choose Your\nDomain 🎯',
                     style: AppTextStyles.displayMedium),
                 const SizedBox(height: 8),

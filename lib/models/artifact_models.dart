@@ -2,36 +2,52 @@
 // Data models shared across all artifact screens.
 
 // ── Artifact type enum ────────────────────────────────────────────────────────
-enum ArtifactType { dashboard, community, quiz, visualizer, roadmap }
+// 4 tabs: Dashboard · Community · Quiz · Placement Prep
+enum ArtifactType { dashboard, community, quiz, placement, roadmap, visualizer }
 
 extension ArtifactTypeExt on ArtifactType {
   String get assetPath {
     switch (this) {
-      case ArtifactType.dashboard:   return 'assets/artifacts/dashboard.html';
-      case ArtifactType.community:   return 'assets/artifacts/community.html';
-      case ArtifactType.quiz:        return 'assets/artifacts/quiz.html';
-      case ArtifactType.visualizer:  return 'assets/artifacts/visualizer.html';
-      case ArtifactType.roadmap:     return 'assets/artifacts/roadmap.html';
+      case ArtifactType.dashboard:  return 'assets/artifacts/dashboard.html';
+      case ArtifactType.community:  return 'assets/artifacts/community.html';
+      case ArtifactType.quiz:       return 'assets/artifacts/quiz.html';
+      case ArtifactType.placement:  return '';
+      case ArtifactType.roadmap:
+        // TODO: Handle this case.
+        throw UnimplementedError();
+      case ArtifactType.visualizer:
+        // TODO: Handle this case.
+        throw UnimplementedError();
     }
   }
 
   String get title {
     switch (this) {
-      case ArtifactType.dashboard:   return 'Daily Dashboard';
-      case ArtifactType.community:   return 'Community Hub';
-      case ArtifactType.quiz:        return 'Adaptive Quiz';
-      case ArtifactType.visualizer:  return 'Concept Visualizer';
-      case ArtifactType.roadmap:     return 'Career Roadmap';
+      case ArtifactType.dashboard:  return 'Daily Dashboard';
+      case ArtifactType.community:  return 'Community Hub';
+      case ArtifactType.quiz:       return 'Adaptive Quiz';
+      case ArtifactType.placement:  return 'Placement Prep';
+      case ArtifactType.roadmap:
+        // TODO: Handle this case.
+        throw UnimplementedError();
+      case ArtifactType.visualizer:
+        // TODO: Handle this case.
+        throw UnimplementedError();
     }
   }
 
   String get emoji {
     switch (this) {
-      case ArtifactType.dashboard:   return '📊';
-      case ArtifactType.community:   return '🌐';
-      case ArtifactType.quiz:        return '🧠';
-      case ArtifactType.visualizer:  return '🔭';
-      case ArtifactType.roadmap:     return '🗺️';
+      case ArtifactType.dashboard:  return '📊';
+      case ArtifactType.community:  return '🌐';
+      case ArtifactType.quiz:       return '🧠';
+      case ArtifactType.placement:  return '🎯';
+      case ArtifactType.roadmap:
+        // TODO: Handle this case.
+        throw UnimplementedError();
+      case ArtifactType.visualizer:
+        // TODO: Handle this case.
+        throw UnimplementedError();
     }
   }
 }
@@ -46,6 +62,7 @@ class LeaderboardEntry {
   final String avatarColor;
   final bool isCurrentUser;
   final String? badge;
+  final int streakDays;
 
   const LeaderboardEntry({
     required this.rank,
@@ -55,6 +72,7 @@ class LeaderboardEntry {
     required this.avatarColor,
     this.isCurrentUser = false,
     this.badge,
+    this.streakDays = 0,
   });
 }
 
@@ -68,7 +86,7 @@ class DiscussionPost {
   final int replies;
   final int likes;
   final bool isPinned;
-  final String? tag; // 'HOT', 'NEW', etc.
+  final String? tag;
 
   const DiscussionPost({
     required this.id,
@@ -111,7 +129,7 @@ class CommunityProject {
   final String emoji;
   final String title;
   final String description;
-  final double progress; // 0.0 – 1.0
+  final double progress;
   final bool isCompleted;
   final List<String> memberColors;
 
@@ -125,8 +143,6 @@ class CommunityProject {
     required this.memberColors,
   });
 }
-
-// ── Activity timeline models ──────────────────────────────────────────────────
 
 class ActivityEntry {
   final String timeLabel;

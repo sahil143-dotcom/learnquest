@@ -297,19 +297,27 @@ class _RankRow extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Text(
-                      isYou ? 'You (${entry.name})' : entry.name,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 13,
-                        color: isYou
-                            ? const Color(0xFF6C63FF)
-                            : const Color(0xFF2D3748),
+                    Flexible(
+                      child: Text(
+                        isYou ? 'You (${entry.name})' : entry.name,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                          color: isYou
+                              ? const Color(0xFF6C63FF)
+                              : const Color(0xFF2D3748),
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     if (entry.badge != null) ...[
                       const SizedBox(width: 4),
                       Text(entry.badge!),
+                    ],
+                    // ── Case 3: Streak mini-badge ───────────────────────
+                    if (entry.streakDays > 0) ...[
+                      const SizedBox(width: 6),
+                      _MiniStreakBadge(days: entry.streakDays),
                     ],
                   ],
                 ),
@@ -458,6 +466,44 @@ class _PostCard extends StatelessWidget {
                 _StatChip(icon: '📌', label: 'Pinned'),
               ],
             ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Case 3: Mini streak badge for Leaderboard rows ──────────────────────────
+// A compact 🔥 + number pill that appears inline next to the user's name.
+// Signals social status — high streak = dedicated learner.
+
+class _MiniStreakBadge extends StatelessWidget {
+  final int days;
+  const _MiniStreakBadge({required this.days});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: const Color(0xFFE8593C).withOpacity(0.10),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: const Color(0xFFE8593C).withOpacity(0.22),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text('🔥', style: TextStyle(fontSize: 9)),
+          const SizedBox(width: 2),
+          Text(
+            '$days',
+            style: const TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFFE8593C),
+            ),
           ),
         ],
       ),

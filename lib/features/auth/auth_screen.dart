@@ -36,10 +36,10 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   @override
   void initState() {
     super.initState();
-    _loadSelectedCareer();
+    _loadCareerAndCheckAuth();
   }
 
-  Future<void> _loadSelectedCareer() async {
+  Future<void> _loadCareerAndCheckAuth() async {
     final prefs = await SharedPreferences.getInstance();
     final id = prefs.getString('selected_career_id');
     if (id != null && mounted) {
@@ -73,17 +73,9 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     super.dispose();
   }
 
-  // Navigate after login — go straight to roadmap if path already saved
+  // Navigate after login — always go to Dashboard
   void _navigateAfterLogin() {
-    if (_selectedCareerId != null) {
-      Navigator.pushReplacementNamed(
-        context,
-        AppRoutes.roadmapLoading,
-        arguments: _selectedCareerId,
-      );
-    } else {
-      Navigator.pushReplacementNamed(context, AppRoutes.domainSelect);
-    }
+    Navigator.pushReplacementNamed(context, AppRoutes.artifacts);
   }
 
   // ── Submit (sign up or login) ──────────────────────────────────────────────
@@ -117,6 +109,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       }
 
       if (!mounted) return;
+      // New sign-ups go to onboarding → choose path → roadmap.
+      // Returning users logging in go straight to their roadmap.
       _navigateAfterLogin();
     } on FirebaseAuthException catch (e) {
       setState(() => _errorMessage = _friendlyError(e.code));
@@ -188,21 +182,13 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: GradientBackground(
-        colors: const [
-          Color(0xFFDCE8F5),
-          Color(0xFFC5DCE8),
-          Color(0xFFB8E0D2),
-        ],
         child: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(24, 52, 24, 32),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header — hide step tag when career is already saved
-                if (_selectedCareerId == null)
-                  const ScreenTag('Step 1 of 3'),
-                if (_selectedCareerId == null) const SizedBox(height: 12),
+                // Header — no step tag needed (career is chosen before login)
                 Text(
                   _isSignUp ? 'Create your\naccount ✦' : 'Welcome\nback ✦',
                   style: AppTextStyles.displayMedium,
@@ -214,8 +200,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                 ),
                 const SizedBox(height: 20),
 
-                // ── Selected career path card ──────────────────────────────
-                if (_selectedCareerId != null) ...[
+                // ── Selected career path card (login tab only) ────────────
+                if (_selectedCareerId != null && !_isSignUp) ...[
                   Container(
                     padding: const EdgeInsets.fromLTRB(14, 12, 10, 12),
                     decoration: BoxDecoration(
@@ -287,7 +273,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                ] else
+                ] else if (_selectedCareerId == null || _isSignUp)
                   const SizedBox(height: 8),
 
                 // ── Error banner ───────────────────────────────────────────

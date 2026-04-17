@@ -5,11 +5,14 @@
 class AppRoutes {
   AppRoutes._();
 
-  static const onboarding    = '/';
-  static const login         = '/login';
-  static const domainSelect  = '/domain-select';
+  static const onboarding     = '/';
+  static const login          = '/login';
+  static const welcome        = '/welcome';
+  static const domainSelect   = '/domain-select';
+  static const branchSelect   = '/branch-select';   // NEW: Engineering branches
   static const specialization = '/specialization';
   static const roadmapLoading = '/roadmap-loading';
-  static const roadmap       = '/roadmap';
-  static const artifacts     = '/artifacts';
+  static const roadmap        = '/roadmap';
+  static const artifacts      = '/artifacts';
+  static const placementPrep  = '/placement-prep';  // NEW: Placement Prep hub
 }

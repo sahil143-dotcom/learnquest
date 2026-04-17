@@ -18,7 +18,6 @@ class VisualizerScreen extends ConsumerWidget {
 
     return Scaffold(
       body: GradientBackground(
-        colors: const [Color(0xFFEDE7F6), Color(0xFFE3F2FD), Color(0xFFE8F5EE)],
         child: SafeArea(
           child: Column(
             children: [

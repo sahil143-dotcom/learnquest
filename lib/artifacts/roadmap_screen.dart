@@ -20,7 +20,6 @@ class RoadmapArtifactScreen extends ConsumerWidget {
 
     return Scaffold(
       body: GradientBackground(
-        colors: const [Color(0xFFFFF8E1), Color(0xFFE0F7FA), Color(0xFFE8F5EE)],
         child: SafeArea(
           child: Column(
             children: [

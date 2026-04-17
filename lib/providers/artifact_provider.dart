@@ -21,31 +21,31 @@ final joinedGroupsProvider = StateProvider<Set<String>>(
 final leaderboardProvider = Provider<List<LeaderboardEntry>>((ref) => [
       const LeaderboardEntry(
         rank: 1, name: 'Alex Chen', level: 25, xp: 12450,
-        avatarColor: '#FF9500', badge: '👑',
+        avatarColor: '#FF9500', badge: '👑', streakDays: 42,
       ),
       const LeaderboardEntry(
         rank: 2, name: 'Sarah Johnson', level: 23, xp: 11200,
-        avatarColor: '#8E8E93',
+        avatarColor: '#8E8E93', streakDays: 30,
       ),
       const LeaderboardEntry(
         rank: 3, name: 'Mike Davis', level: 21, xp: 10100,
-        avatarColor: '#A2845E',
+        avatarColor: '#A2845E', streakDays: 21,
       ),
       const LeaderboardEntry(
         rank: 4, name: 'You', level: 5, xp: 720,
-        avatarColor: '#6C63FF', isCurrentUser: true,
+        avatarColor: '#6C63FF', isCurrentUser: true, streakDays: 7,
       ),
       const LeaderboardEntry(
         rank: 5, name: 'Emma Wilson', level: 4, xp: 650,
-        avatarColor: '#34C759',
+        avatarColor: '#34C759', streakDays: 5,
       ),
       const LeaderboardEntry(
         rank: 6, name: 'Rahul Sharma', level: 4, xp: 580,
-        avatarColor: '#FF3B30',
+        avatarColor: '#FF3B30', streakDays: 3,
       ),
       const LeaderboardEntry(
         rank: 7, name: 'Priya Mehta', level: 3, xp: 420,
-        avatarColor: '#5856D6',
+        avatarColor: '#5856D6', streakDays: 1,
       ),
     ]);
 

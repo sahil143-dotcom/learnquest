@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/constants/routes.dart';
 import '../../../shared/widgets/glass_card.dart';
@@ -57,18 +59,28 @@ class _SpecializationScreenState extends State<SpecializationScreen>
     CareerBottomSheet.show(
       context,
       career,
-      onChoosePath: () {
-        // Persist the selected career so returning users skip domain selection
-        SharedPreferences.getInstance().then((prefs) {
-          prefs.setString('selected_career_id', career.id);
-          prefs.setString('selected_career_emoji', career.emoji);
-          prefs.setString('selected_career_title', career.title);
-        });
-        Navigator.pushNamed(
-          context,
-          AppRoutes.roadmapLoading,
-          arguments: career.id,
-        );
+      onChoosePath: () async {
+        // Save to SharedPreferences (for auth screen display)
+        final prefs = await SharedPreferences.getInstance();
+        prefs.setString('selected_career_id', career.id);
+        prefs.setString('selected_career_emoji', career.emoji);
+        prefs.setString('selected_career_title', career.title);
+
+        // Save to Firestore so Riverpod userProgressProvider picks it up
+        final uid = FirebaseAuth.instance.currentUser?.uid;
+        if (uid != null) {
+          await FirebaseFirestore.instance.collection('users').doc(uid).update({
+            'selectedCareer': career.id,
+          });
+        }
+
+        if (context.mounted) {
+          Navigator.pushReplacementNamed(
+            context,
+            AppRoutes.roadmapLoading,
+            arguments: career.id,
+          );
+        }
       },
     );
   }
@@ -77,11 +89,6 @@ class _SpecializationScreenState extends State<SpecializationScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       body: GradientBackground(
-        colors: const [
-          Color(0xFFF0F9F4),
-          Color(0xFFDAEEE6),
-          Color(0xFFC8DCEE),
-        ],
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
@@ -116,7 +123,7 @@ class _SpecializationScreenState extends State<SpecializationScreen>
                   ),
                 ),
                 const SizedBox(height: 20),
-                const ScreenTag('Engineering → CSE'),
+                ScreenTag('Engineering → ${(ModalRoute.of(context)?.settings.arguments as String?) ?? 'CSE'}'),
                 const SizedBox(height: 12),
                 Text('Pick Your\nSpecialization 🔥',
                     style: AppTextStyles.displayMedium),

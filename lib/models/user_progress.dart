@@ -10,6 +10,11 @@ class UserProgress {
   final List<String> completedMilestones;
   final List<String> joinedGroups;
 
+  // ── Streak tracking ──────────────────────────────────────────────────────────
+  final int streakDays;          // Current active streak count
+  final DateTime? lastActivityDate; // Last day the user opened the app
+  final int longestStreak;       // Personal best streak ever
+
   const UserProgress({
     required this.uid,
     required this.name,
@@ -18,6 +23,9 @@ class UserProgress {
     this.selectedCareer,
     this.completedMilestones = const [],
     this.joinedGroups = const [],
+    this.streakDays = 0,
+    this.lastActivityDate,
+    this.longestStreak = 0,
   });
 
   factory UserProgress.empty() => const UserProgress(
@@ -35,6 +43,9 @@ class UserProgress {
     String? selectedCareer,
     List<String>? completedMilestones,
     List<String>? joinedGroups,
+    int? streakDays,
+    DateTime? lastActivityDate,
+    int? longestStreak,
   }) {
     return UserProgress(
       uid: uid ?? this.uid,
@@ -44,6 +55,9 @@ class UserProgress {
       selectedCareer: selectedCareer ?? this.selectedCareer,
       completedMilestones: completedMilestones ?? this.completedMilestones,
       joinedGroups: joinedGroups ?? this.joinedGroups,
+      streakDays: streakDays ?? this.streakDays,
+      lastActivityDate: lastActivityDate ?? this.lastActivityDate,
+      longestStreak: longestStreak ?? this.longestStreak,
     );
   }
 
@@ -57,4 +71,8 @@ class UserProgress {
     if (xp >= 1000) return '${(xp / 1000).toStringAsFixed(1)}K';
     return '$xp';
   }
+
+  /// Returns a short human-readable streak label e.g. "12-day streak"
+  String get streakLabel =>
+      streakDays == 0 ? 'No streak yet' : '$streakDays-day streak';
 }

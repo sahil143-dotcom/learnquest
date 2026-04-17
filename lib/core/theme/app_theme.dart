@@ -8,10 +8,10 @@ import 'package:google_fonts/google_fonts.dart';
 class AppColors {
   AppColors._();
 
-  // Pastel gradient palette
-  static const gradientStart  = Color(0xFFE8F5EE);
-  static const gradientMid    = Color(0xFFD4EADF);
-  static const gradientEnd    = Color(0xFFC5DCE8);
+  // Greyish-white gradient palette
+  static const gradientStart  = Color(0xFFE8E8EC);
+  static const gradientMid    = Color(0xFFE2E2E7);
+  static const gradientEnd    = Color(0xFFDCDCE2);
 
   // Accent colors
   static const blue           = Color(0xFF4A90B8);
@@ -25,9 +25,9 @@ class AppColors {
   static const text2          = Color(0xFF3D5A52);
   static const text3          = Color(0xFF6B8A82);
 
-  // Glass card
-  static const glassWhite     = Color(0x8CFFFFFF);   // 55% white
-  static const glassBorder    = Color(0xB3FFFFFF);   // 70% white
+  // Glass card — visible on greyish-white bg
+  static const glassWhite     = Color(0xFFFFFFFF);   // pure white cards
+  static const glassBorder    = Color(0xFFD4D4DA);   // medium grey border
 
   // Career accent colors
   static const aiAccent       = Color(0xFF4338CA);
@@ -47,71 +47,78 @@ class AppColors {
 class AppTextStyles {
   AppTextStyles._();
 
-  static TextStyle get displayLarge => GoogleFonts.syne(
-    fontSize: 32,
+  // ── Display — Poppins, bold, tight leading ───────────────────────────────
+  static TextStyle get displayLarge => GoogleFonts.poppins(
+    fontSize: 34,
     fontWeight: FontWeight.w800,
+    color: AppColors.text1,
+    height: 1.1,
+    letterSpacing: -0.5,
+  );
+
+  static TextStyle get displayMedium => GoogleFonts.poppins(
+    fontSize: 28,
+    fontWeight: FontWeight.w700,
     color: AppColors.text1,
     height: 1.15,
+    letterSpacing: -0.3,
   );
 
-  static TextStyle get displayMedium => GoogleFonts.syne(
-    fontSize: 26,
-    fontWeight: FontWeight.w800,
-    color: AppColors.text1,
-    height: 1.2,
-  );
-
-  static TextStyle get headingLarge => GoogleFonts.syne(
+  // ── Headings — Poppins, semibold ─────────────────────────────────────────
+  static TextStyle get headingLarge => GoogleFonts.poppins(
     fontSize: 22,
-    fontWeight: FontWeight.w700,
-    color: AppColors.text1,
-    height: 1.25,
-  );
-
-  static TextStyle get headingMedium => GoogleFonts.syne(
-    fontSize: 18,
-    fontWeight: FontWeight.w700,
+    fontWeight: FontWeight.w600,
     color: AppColors.text1,
     height: 1.3,
   );
 
-  static TextStyle get headingSmall => GoogleFonts.syne(
-    fontSize: 14,
-    fontWeight: FontWeight.w700,
+  static TextStyle get headingMedium => GoogleFonts.poppins(
+    fontSize: 18,
+    fontWeight: FontWeight.w600,
     color: AppColors.text1,
+    height: 1.3,
   );
 
-  static TextStyle get bodyLarge => const TextStyle(
+  static TextStyle get headingSmall => GoogleFonts.poppins(
     fontSize: 15,
-    fontWeight: FontWeight.w400,
-    color: AppColors.text2,
-    height: 1.65,
+    fontWeight: FontWeight.w600,
+    color: AppColors.text1,
+    height: 1.3,
   );
 
-  static TextStyle get bodyMedium => const TextStyle(
-    fontSize: 13,
+  // ── Body — Inter, regular/medium ─────────────────────────────────────────
+  static TextStyle get bodyLarge => GoogleFonts.inter(
+    fontSize: 16,
     fontWeight: FontWeight.w400,
     color: AppColors.text2,
     height: 1.6,
   );
 
-  static TextStyle get bodySmall => const TextStyle(
-    fontSize: 12,
+  static TextStyle get bodyMedium => GoogleFonts.inter(
+    fontSize: 14,
+    fontWeight: FontWeight.w400,
+    color: AppColors.text2,
+    height: 1.55,
+  );
+
+  static TextStyle get bodySmall => GoogleFonts.inter(
+    fontSize: 13,
     fontWeight: FontWeight.w400,
     color: AppColors.text3,
     height: 1.5,
   );
 
-  static TextStyle get label => const TextStyle(
-    fontSize: 10,
-    fontWeight: FontWeight.w700,
-    letterSpacing: 1.5,
+  // ── UI elements ───────────────────────────────────────────────────────────
+  static TextStyle get label => GoogleFonts.inter(
+    fontSize: 11,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 1.2,
     color: AppColors.text3,
   );
 
-  static TextStyle get chip => const TextStyle(
-    fontSize: 11,
-    fontWeight: FontWeight.w600,
+  static TextStyle get chip => GoogleFonts.inter(
+    fontSize: 12,
+    fontWeight: FontWeight.w500,
     color: AppColors.text2,
   );
 }
@@ -121,23 +128,22 @@ class AppTheme {
 
   static ThemeData get theme => ThemeData(
     useMaterial3: true,
-    textTheme: GoogleFonts.dmSansTextTheme(),
+    textTheme: GoogleFonts.interTextTheme(),
     colorScheme: ColorScheme.fromSeed(
       seedColor: AppColors.blue,
       brightness: Brightness.light,
     ),
-    scaffoldBackgroundColor: AppColors.gradientStart,
-    appBarTheme: const AppBarTheme(
+    scaffoldBackgroundColor: const Color(0xFFE8E8EC),
+    appBarTheme: AppBarTheme(
       backgroundColor: Colors.transparent,
       elevation: 0,
       centerTitle: false,
-      titleTextStyle: TextStyle(
-        fontFamily: 'Syne',
+      titleTextStyle: GoogleFonts.poppins(
         fontSize: 18,
-        fontWeight: FontWeight.w700,
+        fontWeight: FontWeight.w600,
         color: AppColors.text1,
       ),
-      iconTheme: IconThemeData(color: AppColors.text1),
+      iconTheme: const IconThemeData(color: AppColors.text1),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
@@ -148,29 +154,29 @@ class AppTheme {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(14),
         ),
-        textStyle: const TextStyle(
+        textStyle: GoogleFonts.poppins(
           fontSize: 15,
-          fontWeight: FontWeight.w700,
+          fontWeight: FontWeight.w600,
         ),
       ),
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: const Color(0x80FFFFFF),
+      fillColor: Colors.white,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: Color(0xBFFFFFFF), width: 1.5),
+        borderSide: const BorderSide(color: AppColors.glassBorder, width: 1.5),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: Color(0xBFFFFFFF), width: 1.5),
+        borderSide: const BorderSide(color: AppColors.glassBorder, width: 1.5),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: const BorderSide(color: AppColors.blue, width: 1.5),
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-      hintStyle: const TextStyle(color: AppColors.text3, fontSize: 14),
+      hintStyle: GoogleFonts.inter(color: AppColors.text3, fontSize: 14),
     ),
   );
 }
