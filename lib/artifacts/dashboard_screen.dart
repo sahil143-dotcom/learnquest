@@ -96,10 +96,6 @@ class DashboardScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 20),
 
-              // ── Daily Quests ───────────────────────────────────────────
-              const _DailyQuestsCard(),
-              const SizedBox(height: 14),
-
               // ── Your Path ──────────────────────────────────────────────
               _RoadmapCard(
                 selectedCareer: user.selectedCareer,
@@ -115,6 +111,10 @@ class DashboardScreen extends ConsumerWidget {
 
               // ── Weekly Challenge ───────────────────────────────────────
               const _WeeklyChallengeCard(),
+              const SizedBox(height: 14),
+
+              // ── Daily Quests ───────────────────────────────────────────
+              const _DailyQuestsCard(),
               const SizedBox(height: 16),
 
               // ── Daily tip ──────────────────────────────────────────────
