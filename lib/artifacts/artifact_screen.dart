@@ -103,9 +103,6 @@ class _ArtifactHUD extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _HUDItem(emoji: '🔥', value: '${progress.streakDays}',
-              label: 'streak', valueColor: const Color(0xFFE8593C)),
-          _HUDDivider(),
           _HUDItem(emoji: '⚡', value: 'Lv${progress.level}',
               label: 'level', valueColor: const Color(0xFF4A90B8)),
           _HUDDivider(),

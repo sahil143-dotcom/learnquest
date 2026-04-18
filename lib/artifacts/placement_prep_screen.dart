@@ -313,8 +313,6 @@ class _OverviewTab extends StatelessWidget {
             _StatCard(emoji: '🏆', label: 'Milestones', value: '${user.completedMilestones.length}'),
             const SizedBox(width: 10),
             _StatCard(emoji: '⚡', label: 'Level', value: '${user.level}'),
-            const SizedBox(width: 10),
-            _StatCard(emoji: '🔥', label: 'Streak', value: '${user.streakDays}d'),
           ],
         ),
         const SizedBox(height: 20),

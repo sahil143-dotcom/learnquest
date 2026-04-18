@@ -314,11 +314,6 @@ class _RankRow extends StatelessWidget {
                       const SizedBox(width: 4),
                       Text(entry.badge!),
                     ],
-                    // ── Case 3: Streak mini-badge ───────────────────────
-                    if (entry.streakDays > 0) ...[
-                      const SizedBox(width: 6),
-                      _MiniStreakBadge(days: entry.streakDays),
-                    ],
                   ],
                 ),
                 Text(

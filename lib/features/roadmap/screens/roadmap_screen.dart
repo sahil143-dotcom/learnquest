@@ -214,11 +214,9 @@ class RoadmapScreen extends ConsumerWidget {
 
                     const SizedBox(height: 10),
 
-                    // ── 🔥 Case 1: Streak + Level badge row ───────────────
+                    // ── Level badge ────────────────────────────────────────
                     Row(
                       children: [
-                        _StreakBadge(streakDays: userProgress.streakDays),
-                        const SizedBox(width: 8),
                         _LevelBadge(level: userProgress.level),
                       ],
                     ),
