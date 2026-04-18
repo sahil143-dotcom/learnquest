@@ -42,11 +42,11 @@ class _ArtifactScreenState extends ConsumerState<ArtifactScreen> {
         children: [
           IndexedStack(
             index: ArtifactType.values.indexOf(_current),
-            children: const [
-              DashboardScreen(),
-              CommunityScreen(),
-              QuizScreen(),
-              PlacementPrepScreen(),
+            children: [
+              const DashboardScreen(),
+              const CommunityScreen(),
+              QuizScreen(onBack: () => setState(() => _current = ArtifactType.dashboard)),
+              const PlacementPrepScreen(),
             ],
           ),
 

@@ -10,7 +10,8 @@ import '../shared/widgets/glass_card.dart';
 import '../widgets/webview_wrapper.dart';
 
 class QuizScreen extends ConsumerWidget {
-  const QuizScreen({super.key});
+  final VoidCallback? onBack;
+  const QuizScreen({super.key, this.onBack});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -26,7 +27,7 @@ class QuizScreen extends ConsumerWidget {
                 child: Row(
                   children: [
                     GestureDetector(
-                      onTap: () => Navigator.pop(context),
+                      onTap: () => onBack != null ? onBack!() : Navigator.pop(context),
                       child: Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 14, vertical: 9),
