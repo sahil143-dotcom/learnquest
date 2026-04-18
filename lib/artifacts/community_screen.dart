@@ -9,7 +9,8 @@ import '../providers/artifact_provider.dart';
 import '../providers/user_provider.dart';
 
 class CommunityScreen extends ConsumerStatefulWidget {
-  const CommunityScreen({super.key});
+  final VoidCallback? onBack;
+  const CommunityScreen({super.key, this.onBack});
 
   @override
   ConsumerState<CommunityScreen> createState() => _CommunityScreenState();
@@ -67,7 +68,7 @@ class _CommunityScreenState extends ConsumerState<CommunityScreen>
                   Row(
                     children: [
                       GestureDetector(
-                        onTap: () => Navigator.pop(context),
+                        onTap: () => widget.onBack != null ? widget.onBack!() : Navigator.pop(context),
                         child: Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(

@@ -13,7 +13,8 @@ import '../providers/user_provider.dart';
 // ═══════════════════════════════════════════════════════════════════════════════
 
 class PlacementPrepScreen extends ConsumerStatefulWidget {
-  const PlacementPrepScreen({super.key});
+  final VoidCallback? onBack;
+  const PlacementPrepScreen({super.key, this.onBack});
 
   @override
   ConsumerState<PlacementPrepScreen> createState() =>
@@ -71,7 +72,7 @@ class _PlacementPrepScreenState extends ConsumerState<PlacementPrepScreen>
                   // Title row
                   Row(
                     children: [
-                      _BackButton(),
+                      _BackButton(onBack: widget.onBack),
                       const SizedBox(width: 12),
                       const Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -156,10 +157,13 @@ class _Tab {
 
 // ─── Shared back button ───────────────────────────────────────────────────────
 class _BackButton extends StatelessWidget {
+  final VoidCallback? onBack;
+  const _BackButton({this.onBack});
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.maybePop(context),
+      onTap: () => onBack != null ? onBack!() : Navigator.maybePop(context),
       child: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
