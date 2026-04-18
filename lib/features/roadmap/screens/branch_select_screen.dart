@@ -130,7 +130,7 @@ class _BranchSelectScreenState extends State<BranchSelectScreen>
       return;
     }
     // CSE is live — navigate with branch name as argument
-    Navigator.pushNamed(
+    Navigator.pushReplacementNamed(
       context,
       AppRoutes.specialization,
       arguments: branch.shortName,

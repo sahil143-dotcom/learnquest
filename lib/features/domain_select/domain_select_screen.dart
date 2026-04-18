@@ -60,7 +60,7 @@ class _DomainSelectScreenState extends State<DomainSelectScreen>
         badge: '✦ Live',
         badgeColor: AppColors.blue,
         isActive: true,
-        onTap: () => Navigator.pushNamed(context, AppRoutes.branchSelect),
+        onTap: () => Navigator.pushReplacementNamed(context, AppRoutes.branchSelect),
       ),
       _DomainItem(
         emoji: '⚖️',
