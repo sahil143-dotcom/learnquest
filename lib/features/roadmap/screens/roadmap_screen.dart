@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/constants/routes.dart';
 import '../../../shared/widgets/glass_card.dart';
@@ -129,11 +130,86 @@ class _AnimatedDotState extends State<_AnimatedDot>
 
 // ─── RoadmapScreen ────────────────────────────────────────────────────────────
 
-class RoadmapScreen extends ConsumerWidget {
+class RoadmapScreen extends ConsumerStatefulWidget {
   const RoadmapScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<RoadmapScreen> createState() => _RoadmapScreenState();
+}
+
+class _RoadmapScreenState extends ConsumerState<RoadmapScreen> {
+  bool _isFirstTime = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkFirstTime();
+  }
+
+  Future<void> _checkFirstTime() async {
+    final prefs = await SharedPreferences.getInstance();
+    final confirmed = prefs.getBool('career_path_confirmed') ?? false;
+    if (mounted) setState(() => _isFirstTime = !confirmed);
+  }
+
+  Future<void> _onBackPressed() async {
+    if (_isFirstTime) {
+      final change = await showDialog<bool>(
+        context: context,
+        barrierDismissible: false,
+        builder: (ctx) => AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: Text(
+            'Change your domain?',
+            style: GoogleFonts.inter(fontWeight: FontWeight.w800, fontSize: 17),
+          ),
+          content: Text(
+            'Do you want to select a different career path?',
+            style: GoogleFonts.inter(fontSize: 14, color: const Color(0xFF6B7280)),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text('No, keep this',
+                  style: GoogleFonts.inter(
+                      fontWeight: FontWeight.w600, color: const Color(0xFF6B7280))),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF4A90B8),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+              ),
+              child: Text('Yes, change',
+                  style: GoogleFonts.inter(
+                      fontWeight: FontWeight.w700, color: Colors.white)),
+            ),
+          ],
+        ),
+      );
+
+      if (!mounted) return;
+
+      if (change == true) {
+        // Go to domain selection
+        Navigator.pushNamedAndRemoveUntil(
+            context, AppRoutes.domainSelect, (r) => false);
+      } else {
+        // Mark confirmed and go to dashboard
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('career_path_confirmed', true);
+        if (!mounted) return;
+        Navigator.pushNamedAndRemoveUntil(
+            context, AppRoutes.artifacts, (r) => false);
+      }
+    } else {
+      Navigator.pop(context);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final careerId    = ModalRoute.of(context)!.settings.arguments as String;
     final career      = findCareerById(careerId);
     final userProgress = ref.watch(userProgressProvider);
@@ -163,7 +239,7 @@ class RoadmapScreen extends ConsumerWidget {
                     Row(
                       children: [
                         _NavButton(
-                          onTap: () => Navigator.pop(context),
+                          onTap: _onBackPressed,
                           child: const Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [

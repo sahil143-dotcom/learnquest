@@ -96,6 +96,7 @@ class AuthService {
     await prefs.remove('selected_career_id');
     await prefs.remove('selected_career_emoji');
     await prefs.remove('selected_career_title');
+    await prefs.remove('career_path_confirmed');
   }
 
   // ── Private: create Firestore user document ────────────────────────────────
