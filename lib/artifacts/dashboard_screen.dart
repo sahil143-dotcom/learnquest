@@ -96,39 +96,25 @@ class DashboardScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 20),
 
-              // ── Quick actions ──────────────────────────────────────────
-              Text('Quick Actions', style: AppTextStyles.headingSmall),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  _ActionButton(
-                    emoji: '🗺️',
-                    label: 'Roadmap',
-                    color: AppColors.blue,
-                    onTap: () => Navigator.pushNamed(
-                      context,
-                      user.selectedCareer != null
-                          ? AppRoutes.roadmap
-                          : AppRoutes.domainSelect,
-                      arguments: user.selectedCareer,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  _ActionButton(
-                    emoji: '🎯',
-                    label: 'Prep Hub',
-                    color: AppColors.purple,
-                    onTap: () {},   // user taps 🎯 tab directly
-                  ),
-                  const SizedBox(width: 10),
-                  _ActionButton(
-                    emoji: '🌐',
-                    label: 'Community',
-                    color: AppColors.green,
-                    onTap: () {},   // user taps 🌐 tab directly
-                  ),
-                ],
+              // ── Daily Quests ───────────────────────────────────────────
+              const _DailyQuestsCard(),
+              const SizedBox(height: 14),
+
+              // ── Your Path ──────────────────────────────────────────────
+              _RoadmapCard(
+                selectedCareer: user.selectedCareer,
+                onTap: () => Navigator.pushNamed(
+                  context,
+                  user.selectedCareer != null
+                      ? AppRoutes.roadmap
+                      : AppRoutes.domainSelect,
+                  arguments: user.selectedCareer,
+                ),
               ),
+              const SizedBox(height: 14),
+
+              // ── Weekly Challenge ───────────────────────────────────────
+              const _WeeklyChallengeCard(),
               const SizedBox(height: 16),
 
               // ── Daily tip ──────────────────────────────────────────────
@@ -479,46 +465,361 @@ class _WavePainter extends CustomPainter {
 // SUPPORTING WIDGETS
 // ═══════════════════════════════════════════════════════════════════════════════
 
-class _ActionButton extends StatelessWidget {
-  final String emoji;
-  final String label;
-  final Color color;
-  final VoidCallback onTap;
-
-  const _ActionButton({
-    required this.emoji,
-    required this.label,
-    required this.color,
-    required this.onTap,
-  });
+// ─── Daily Quests Card ────────────────────────────────────────────────────────
+class _DailyQuestsCard extends StatelessWidget {
+  const _DailyQuestsCard();
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 14),
-          decoration: BoxDecoration(
-            color: color.withOpacity(0.10),
-            border: Border.all(color: color.withOpacity(0.25), width: 1.5),
-            borderRadius: BorderRadius.circular(16),
+    final quests = [
+      _Quest('Solve 5 DSA problems', true),
+      _Quest('Read 1 concept article', true),
+      _Quest('Complete today\'s quiz', false),
+    ];
+    final done = quests.where((q) => q.done).length;
+
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
           ),
-          child: Column(
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(emoji, style: const TextStyle(fontSize: 22)),
-              const SizedBox(height: 6),
               Text(
-                label,
-                style: TextStyle(
-                    fontSize: 10,
+                'Daily Quests',
+                style: GoogleFonts.inter(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
+                  color: const Color(0xFF1A1A2E),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE8F5E9),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  '$done/${quests.length} done',
+                  style: GoogleFonts.inter(
+                    fontSize: 11,
                     fontWeight: FontWeight.w700,
-                    color: color),
-                textAlign: TextAlign.center,
+                    color: const Color(0xFF27AE60),
+                  ),
+                ),
               ),
             ],
           ),
+          const SizedBox(height: 14),
+          ...quests.map((q) => _QuestRow(quest: q)),
+        ],
+      ),
+    );
+  }
+}
+
+class _Quest {
+  final String title;
+  final bool done;
+  const _Quest(this.title, this.done);
+}
+
+class _QuestRow extends StatelessWidget {
+  final _Quest quest;
+  const _QuestRow({required this.quest});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(
+        children: [
+          Container(
+            width: 22,
+            height: 22,
+            decoration: BoxDecoration(
+              color: quest.done ? const Color(0xFF27AE60) : Colors.transparent,
+              border: Border.all(
+                color: quest.done
+                    ? const Color(0xFF27AE60)
+                    : const Color(0xFFDDE1E7),
+                width: 2,
+              ),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: quest.done
+                ? const Icon(Icons.check_rounded, size: 14, color: Colors.white)
+                : null,
+          ),
+          const SizedBox(width: 12),
+          Text(
+            quest.title,
+            style: GoogleFonts.inter(
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+              color: quest.done
+                  ? const Color(0xFFADB5BD)
+                  : const Color(0xFF1A1A2E),
+              decoration:
+                  quest.done ? TextDecoration.lineThrough : TextDecoration.none,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Your Path / Roadmap Card ─────────────────────────────────────────────────
+class _RoadmapCard extends StatelessWidget {
+  final String? selectedCareer;
+  final VoidCallback onTap;
+  const _RoadmapCard({required this.selectedCareer, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFFEEF4FF), Color(0xFFE8F5FF)],
+          ),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: const Color(0xFFBDD7FF), width: 1.2),
         ),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+              child: Row(
+                children: [
+                  Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF4A90B8).withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: const Center(
+                      child: Text('🗺️', style: TextStyle(fontSize: 24)),
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'YOUR PATH',
+                          style: GoogleFonts.inter(
+                            fontSize: 9,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF4A90B8),
+                            letterSpacing: 1.4,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          'Roadmap',
+                          style: GoogleFonts.inter(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w800,
+                            color: const Color(0xFF1A1A2E),
+                          ),
+                        ),
+                        Text(
+                          'Continue your structured journey',
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            color: const Color(0xFF6B7280),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Icon(Icons.arrow_forward_rounded,
+                      color: Color(0xFF4A90B8), size: 20),
+                ],
+              ),
+            ),
+            Container(
+              margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.7),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    selectedCareer != null
+                        ? 'Arrays & Strings · Module 3'
+                        : 'Choose your career path',
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: const Color(0xFF4B5563),
+                    ),
+                  ),
+                  Text(
+                    selectedCareer != null ? '68%' : '—',
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF4A90B8),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Weekly Challenge Card ────────────────────────────────────────────────────
+class _WeeklyChallengeCard extends StatelessWidget {
+  const _WeeklyChallengeCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFFFFF0F0), Color(0xFFFFF5F0)],
+        ),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFFFFCCBB), width: 1.2),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              color: const Color(0xFFE8593C).withOpacity(0.12),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: const Center(
+              child: Text('🏰', style: TextStyle(fontSize: 28)),
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      'WEEKLY CHALLENGE',
+                      style: GoogleFonts.inter(
+                        fontSize: 9,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFFE8593C),
+                        letterSpacing: 1.3,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE8593C),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        'LIVE',
+                        style: GoogleFonts.inter(
+                          fontSize: 8,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  'Dungeon Raid',
+                  style: GoogleFonts.inter(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFF1A1A2E),
+                  ),
+                ),
+                Text(
+                  'Arrays Boss · 2h 14m left',
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    color: const Color(0xFF6B7280),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              color: const Color(0xFFE8593C).withOpacity(0.10),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                  color: const Color(0xFFE8593C).withOpacity(0.25), width: 1.2),
+            ),
+            child: Column(
+              children: [
+                Text(
+                  'REWARD',
+                  style: GoogleFonts.inter(
+                    fontSize: 8,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFFE8593C),
+                    letterSpacing: 0.8,
+                  ),
+                ),
+                Text(
+                  '+500',
+                  style: GoogleFonts.inter(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w900,
+                    color: const Color(0xFFE8593C),
+                    height: 1.1,
+                  ),
+                ),
+                Text(
+                  'XP',
+                  style: GoogleFonts.inter(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFFE8593C),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
