@@ -73,9 +73,12 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     super.dispose();
   }
 
-  // Navigate after login — always go to Dashboard
-  void _navigateAfterLogin() {
-    Navigator.pushReplacementNamed(context, AppRoutes.artifacts);
+  void _navigateAfterLogin({bool isNewUser = false}) {
+    if (isNewUser) {
+      Navigator.pushReplacementNamed(context, AppRoutes.welcome);
+    } else {
+      Navigator.pushReplacementNamed(context, AppRoutes.artifacts);
+    }
   }
 
   // ── Submit (sign up or login) ──────────────────────────────────────────────
@@ -109,9 +112,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       }
 
       if (!mounted) return;
-      // New sign-ups go to onboarding → choose path → roadmap.
-      // Returning users logging in go straight to their roadmap.
-      _navigateAfterLogin();
+      _navigateAfterLogin(isNewUser: _isSignUp);
     } on FirebaseAuthException catch (e) {
       setState(() => _errorMessage = _friendlyError(e.code));
     } catch (e) {
@@ -136,7 +137,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       }
 
       if (!mounted) return;
-      _navigateAfterLogin();
+      _navigateAfterLogin(isNewUser: result.additionalUserInfo?.isNewUser ?? false);
     } on FirebaseAuthException catch (e) {
       setState(() => _errorMessage = _friendlyError(e.code));
     } catch (e) {
