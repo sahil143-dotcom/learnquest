@@ -52,7 +52,11 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   }
 
   void _continue() {
-    Navigator.pushReplacementNamed(context, AppRoutes.artifacts);
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      AppRoutes.artifacts,
+      (route) => false,
+    );
   }
 
   @override

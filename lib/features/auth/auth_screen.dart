@@ -75,9 +75,11 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
 
   void _navigateAfterLogin({bool isNewUser = false}) {
     if (isNewUser) {
-      Navigator.pushReplacementNamed(context, AppRoutes.welcome);
+      Navigator.pushNamedAndRemoveUntil(
+        context, AppRoutes.welcome, (route) => false);
     } else {
-      Navigator.pushReplacementNamed(context, AppRoutes.artifacts);
+      Navigator.pushNamedAndRemoveUntil(
+        context, AppRoutes.artifacts, (route) => false);
     }
   }
 
