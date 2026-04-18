@@ -75,15 +75,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   }
 
   void _continue() {
-    if (_selectedCareerId != null) {
-      Navigator.pushReplacementNamed(
-        context,
-        AppRoutes.roadmapLoading,
-        arguments: _selectedCareerId,
-      );
-    } else {
-      Navigator.pushReplacementNamed(context, AppRoutes.domainSelect);
-    }
+    Navigator.pushReplacementNamed(context, AppRoutes.artifacts);
   }
 
   @override
