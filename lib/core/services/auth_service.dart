@@ -9,6 +9,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -38,6 +39,9 @@ class AuthService {
     // Create user document in Firestore
     await _createUserDoc(credential.user!, name: name.trim());
 
+    // Clear any leftover career data from a previous user on this device
+    await _clearCareerPrefs();
+
     return credential;
   }
 
@@ -66,9 +70,10 @@ class AuthService {
 
     final userCred = await _auth.signInWithCredential(credential);
 
-    // Create user doc if new user
+    // Create user doc and clear prefs if new user
     if (userCred.additionalUserInfo?.isNewUser ?? false) {
       await _createUserDoc(userCred.user!);
+      await _clearCareerPrefs();
     }
 
     return userCred;
@@ -83,6 +88,14 @@ class AuthService {
   Future<void> signOut() async {
     await _googleSignIn.signOut();
     await _auth.signOut();
+  }
+
+  // ── Private: clear career SharedPreferences for new user ──────────────────
+  Future<void> _clearCareerPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('selected_career_id');
+    await prefs.remove('selected_career_emoji');
+    await prefs.remove('selected_career_title');
   }
 
   // ── Private: create Firestore user document ────────────────────────────────
