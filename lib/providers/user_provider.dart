@@ -120,6 +120,11 @@ class UserProgressNotifier extends StateNotifier<UserProgress> {
     });
   }
 
+  // ── Selected career ────────────────────────────────────────────────────────
+  void updateSelectedCareer(String careerId) {
+    state = state.copyWith(selectedCareer: careerId);
+  }
+
   // ── XP ─────────────────────────────────────────────────────────────────────
   Future<void> addXP(int amount) async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
