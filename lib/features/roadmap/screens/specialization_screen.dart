@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/constants/routes.dart';
 import '../../../shared/widgets/glass_card.dart';
@@ -68,14 +66,7 @@ class _SpecializationScreenState extends ConsumerState<SpecializationScreen>
         prefs.setString('selected_career_emoji', career.emoji);
         prefs.setString('selected_career_title', career.title);
 
-        // Save to Firestore and update provider state immediately
-        final uid = FirebaseAuth.instance.currentUser?.uid;
-        if (uid != null) {
-          await FirebaseFirestore.instance.collection('users').doc(uid).update({
-            'selectedCareer': career.id,
-          });
-        }
-        ref.read(userProgressProvider.notifier).updateSelectedCareer(career.id);
+        await ref.read(userProgressProvider.notifier).addCareer(career.id);
 
         if (context.mounted) {
           Navigator.pushReplacementNamed(

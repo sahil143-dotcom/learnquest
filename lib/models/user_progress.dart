@@ -7,6 +7,7 @@ class UserProgress {
   final int level;
   final int xp;
   final String? selectedCareer;
+  final List<String> selectedCareers;
   final List<String> completedMilestones;
   final List<String> joinedGroups;
 
@@ -21,6 +22,7 @@ class UserProgress {
     required this.level,
     required this.xp,
     this.selectedCareer,
+    this.selectedCareers = const [],
     this.completedMilestones = const [],
     this.joinedGroups = const [],
     this.streakDays = 0,
@@ -41,6 +43,7 @@ class UserProgress {
     int? level,
     int? xp,
     String? selectedCareer,
+    List<String>? selectedCareers,
     List<String>? completedMilestones,
     List<String>? joinedGroups,
     int? streakDays,
@@ -53,6 +56,7 @@ class UserProgress {
       level: level ?? this.level,
       xp: xp ?? this.xp,
       selectedCareer: selectedCareer ?? this.selectedCareer,
+      selectedCareers: selectedCareers ?? this.selectedCareers,
       completedMilestones: completedMilestones ?? this.completedMilestones,
       joinedGroups: joinedGroups ?? this.joinedGroups,
       streakDays: streakDays ?? this.streakDays,

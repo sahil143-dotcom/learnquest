@@ -10,6 +10,7 @@ import '../core/theme/app_theme.dart';
 import '../core/constants/routes.dart';
 import '../providers/user_provider.dart';
 import '../shared/widgets/glass_card.dart';
+import '../features/roadmap/data/career_data.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -98,14 +99,13 @@ class DashboardScreen extends ConsumerWidget {
 
               // ── Your Path ──────────────────────────────────────────────
               _RoadmapCard(
-                selectedCareer: user.selectedCareer,
-                onTap: () => Navigator.pushNamed(
-                  context,
-                  user.selectedCareer != null
-                      ? AppRoutes.roadmap
-                      : AppRoutes.domainSelect,
-                  arguments: user.selectedCareer,
-                ),
+                selectedCareers: user.selectedCareers,
+                onTapCareer: (careerId) => Navigator.pushNamed(
+                  context, AppRoutes.roadmap, arguments: careerId),
+                onAddCareer: () => Navigator.pushNamed(
+                  context, AppRoutes.domainSelect),
+                onTapEmpty: () => Navigator.pushNamed(
+                  context, AppRoutes.domainSelect),
               ),
               const SizedBox(height: 14),
 
@@ -584,112 +584,156 @@ class _QuestRow extends StatelessWidget {
 
 // ─── Your Path / Roadmap Card ─────────────────────────────────────────────────
 class _RoadmapCard extends StatelessWidget {
-  final String? selectedCareer;
-  final VoidCallback onTap;
-  const _RoadmapCard({required this.selectedCareer, required this.onTap});
+  final List<String> selectedCareers;
+  final void Function(String careerId) onTapCareer;
+  final VoidCallback onAddCareer;
+  final VoidCallback onTapEmpty;
+
+  const _RoadmapCard({
+    required this.selectedCareers,
+    required this.onTapCareer,
+    required this.onAddCareer,
+    required this.onTapEmpty,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFFEEF4FF), Color(0xFFE8F5FF)],
-          ),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: const Color(0xFFBDD7FF), width: 1.2),
+    return Container(
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFFEEF4FF), Color(0xFFE8F5FF)],
         ),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
-              child: Row(
-                children: [
-                  Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF4A90B8).withOpacity(0.15),
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: const Center(
-                      child: Text('🗺️', style: TextStyle(fontSize: 24)),
-                    ),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFFBDD7FF), width: 1.2),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ── Header ─────────────────────────────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'YOUR PATHS',
+                  style: GoogleFonts.inter(
+                    fontSize: 9,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF4A90B8),
+                    letterSpacing: 1.4,
                   ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                ),
+                GestureDetector(
+                  onTap: onAddCareer,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF4A90B8),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
+                        const Icon(Icons.add_rounded,
+                            size: 13, color: Colors.white),
+                        const SizedBox(width: 4),
                         Text(
-                          'YOUR PATH',
+                          'Add Domain',
                           style: GoogleFonts.inter(
-                            fontSize: 9,
+                            fontSize: 10,
                             fontWeight: FontWeight.w700,
-                            color: const Color(0xFF4A90B8),
-                            letterSpacing: 1.4,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          'Roadmap',
-                          style: GoogleFonts.inter(
-                            fontSize: 17,
-                            fontWeight: FontWeight.w800,
-                            color: const Color(0xFF1A1A2E),
-                          ),
-                        ),
-                        Text(
-                          'Continue your structured journey',
-                          style: GoogleFonts.inter(
-                            fontSize: 12,
-                            color: const Color(0xFF6B7280),
+                            color: Colors.white,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  const Icon(Icons.arrow_forward_rounded,
-                      color: Color(0xFF4A90B8), size: 20),
-                ],
-              ),
+                ),
+              ],
             ),
-            Container(
-              margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.7),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    selectedCareer != null
-                        ? 'Arrays & Strings · Module 3'
-                        : 'Choose your career path',
-                    style: GoogleFonts.inter(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      color: const Color(0xFF4B5563),
-                    ),
+          ),
+
+          // ── Career rows or empty state ──────────────────────────────────────
+          if (selectedCareers.isEmpty)
+            GestureDetector(
+              onTap: onTapEmpty,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.7),
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  Text(
-                    selectedCareer != null ? '68%' : '—',
+                  child: Text(
+                    'Tap to choose your career path →',
                     style: GoogleFonts.inter(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
+                      fontSize: 13,
                       color: const Color(0xFF4A90B8),
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
-                ],
+                ),
+              ),
+            )
+          else
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+              child: Column(
+                children: selectedCareers.map((id) {
+                  final career = findCareerById(id);
+                  return GestureDetector(
+                    onTap: () => onTapCareer(id),
+                    child: Container(
+                      margin: const EdgeInsets.only(bottom: 8),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 12),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.8),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Row(
+                        children: [
+                          Text(career.emoji,
+                              style: const TextStyle(fontSize: 20)),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  career.title,
+                                  style: GoogleFonts.inter(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700,
+                                    color: const Color(0xFF1A1A2E),
+                                  ),
+                                ),
+                                Text(
+                                  career.subtitle,
+                                  style: GoogleFonts.inter(
+                                    fontSize: 11,
+                                    color: const Color(0xFF6B7280),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const Icon(Icons.arrow_forward_ios_rounded,
+                              size: 14, color: Color(0xFF4A90B8)),
+                        ],
+                      ),
+                    ),
+                  );
+                }).toList(),
               ),
             ),
-          ],
-        ),
+        ],
       ),
     );
   }

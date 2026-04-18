@@ -31,6 +31,7 @@ class UserProgressNotifier extends StateNotifier<UserProgress> {
         final level    = (data['level'] as num?)?.toInt() ?? 1;
         final milestones = List<String>.from(data['completedMilestones'] ?? []);
         final groups   = List<String>.from(data['joinedGroups'] ?? []);
+        final selectedCareers = List<String>.from(data['selectedCareers'] ?? []);
 
         // ── Streak fields ──────────────────────────────────────────────────
         final streakDays    = (data['streakDays'] as num?)?.toInt() ?? 0;
@@ -39,12 +40,18 @@ class UserProgressNotifier extends StateNotifier<UserProgress> {
         final ts = data['lastActivityDate'];
         if (ts is Timestamp) lastActivityDate = ts.toDate();
 
+        final primaryCareer = data['selectedCareer'] as String?;
+        final allCareers = selectedCareers.isNotEmpty
+            ? selectedCareers
+            : (primaryCareer != null ? [primaryCareer] : <String>[]);
+
         state = UserProgress(
           uid: user.uid,
           name: data['name'] as String? ?? user.displayName ?? 'You',
           level: level,
           xp: xp,
-          selectedCareer: data['selectedCareer'] as String?,
+          selectedCareer: primaryCareer,
+          selectedCareers: allCareers,
           completedMilestones: milestones,
           joinedGroups: groups,
           streakDays: streakDays,
@@ -120,9 +127,23 @@ class UserProgressNotifier extends StateNotifier<UserProgress> {
     });
   }
 
-  // ── Selected career ────────────────────────────────────────────────────────
-  void updateSelectedCareer(String careerId) {
-    state = state.copyWith(selectedCareer: careerId);
+  // ── Selected careers ───────────────────────────────────────────────────────
+  Future<void> addCareer(String careerId) async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    final updated = [...state.selectedCareers];
+    if (!updated.contains(careerId)) updated.add(careerId);
+
+    state = state.copyWith(
+      selectedCareer: state.selectedCareer ?? careerId,
+      selectedCareers: updated,
+    );
+
+    if (uid != null) {
+      await FirebaseFirestore.instance.collection('users').doc(uid).update({
+        'selectedCareer': state.selectedCareer,
+        'selectedCareers': updated,
+      });
+    }
   }
 
   // ── XP ─────────────────────────────────────────────────────────────────────
