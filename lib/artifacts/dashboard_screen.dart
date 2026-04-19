@@ -2,6 +2,7 @@
 // Daily Dashboard — native Flutter, matches the app's glass/gradient UI.
 // Hero feature: animated water-fill container showing XP level progress.
 
+import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -84,7 +85,11 @@ class DashboardScreen extends ConsumerWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 14),
+
+              // ── Quote of the Day ───────────────────────────────────────
+              const _QuoteBanner(),
+              const SizedBox(height: 14),
 
               // ── ★ Water Animation Stats Card ───────────────────────────
               _WaterStatsCard(
@@ -864,6 +869,164 @@ class _WeeklyChallengeCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// QUOTE BANNER — cycles through motivational quotes, one per 8s
+// Initial quote is seeded by day-of-year so it feels fresh every day.
+// ═══════════════════════════════════════════════════════════════════════════════
+
+class _QuoteBanner extends StatefulWidget {
+  const _QuoteBanner();
+
+  @override
+  State<_QuoteBanner> createState() => _QuoteBannerState();
+}
+
+class _QuoteBannerState extends State<_QuoteBanner>
+    with TickerProviderStateMixin {
+
+  static const _quotes = [
+    ('The secret of getting ahead is getting started.', 'Mark Twain'),
+    ('The only way to do great work is to love what you do.', 'Steve Jobs'),
+    ('It does not matter how slowly you go as long as you do not stop.', 'Confucius'),
+    ('Success is not final, failure is not fatal.', 'Winston Churchill'),
+    ('Believe you can and you\'re halfway there.', 'Theodore Roosevelt'),
+    ('Your future is created by what you do today, not tomorrow.', 'Robert Kiyosaki'),
+    ('The expert in anything was once a beginner.', 'Helen Hayes'),
+    ('Dream big and dare to fail.', 'Norman Vaughan'),
+    ('Strive for progress, not perfection.', 'Anonymous'),
+    ('Don\'t watch the clock; do what it does. Keep going.', 'Sam Levenson'),
+    ('Hard work beats talent when talent doesn\'t work hard.', 'Tim Notke'),
+    ('A journey of a thousand miles begins with a single step.', 'Lao Tzu'),
+    ('You don\'t have to be great to start, but you have to start to be great.', 'Zig Ziglar'),
+    ('The future belongs to those who believe in the beauty of their dreams.', 'Eleanor Roosevelt'),
+    ('Push yourself, because no one else is going to do it for you.', 'Anonymous'),
+  ];
+
+  late int _index;
+  late AnimationController _fadeCtrl;
+  late Animation<double> _fade;
+  late AnimationController _slideCtrl;
+  late Animation<Offset> _slide;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Seed by day-of-year so the quote feels fresh each day
+    final dayOfYear = DateTime.now().difference(
+        DateTime(DateTime.now().year)).inDays;
+    _index = dayOfYear % _quotes.length;
+
+    _fadeCtrl = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 450));
+    _fade = CurvedAnimation(parent: _fadeCtrl, curve: Curves.easeInOut);
+
+    _slideCtrl = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 450));
+    _slide = Tween<Offset>(
+      begin: const Offset(0, 0.25),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _slideCtrl, curve: Curves.easeOut));
+
+    _fadeCtrl.forward();
+    _slideCtrl.forward();
+
+    _timer = Timer.periodic(const Duration(seconds: 8), (_) => _next());
+  }
+
+  Future<void> _next() async {
+    await _fadeCtrl.reverse();
+    if (!mounted) return;
+    setState(() => _index = (_index + 1) % _quotes.length);
+    _slideCtrl.reset();
+    _fadeCtrl.forward();
+    _slideCtrl.forward();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _fadeCtrl.dispose();
+    _slideCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final (quote, author) = _quotes[_index];
+
+    return FadeTransition(
+      opacity: _fade,
+      child: SlideTransition(
+        position: _slide,
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0xFF1A1A2E), Color(0xFF16213E)],
+            ),
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+                color: Colors.white.withOpacity(0.08), width: 1),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.25),
+                blurRadius: 16,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Decorative open-quote
+              Text(
+                '❝',
+                style: GoogleFonts.poppins(
+                  fontSize: 32,
+                  color: const Color(0xFF4A90B8).withOpacity(0.55),
+                  height: 0.85,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      quote,
+                      style: GoogleFonts.inter(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                        height: 1.45,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      '— $author',
+                      style: GoogleFonts.inter(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.white.withOpacity(0.45),
+                        letterSpacing: 0.2,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
