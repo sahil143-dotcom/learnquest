@@ -18,7 +18,6 @@ import 'features/roadmap/screens/branch_select_screen.dart';
 import 'features/roadmap/screens/specialization_screen.dart';
 import 'features/roadmap/screens/roadmap_screen.dart';
 import 'artifacts/artifact_screen.dart';
-import 'artifacts/bg_preview_screen.dart';
 import 'models/artifact_models.dart';
 
 void main() async {
@@ -93,10 +92,6 @@ class LearnQuestApp extends StatelessWidget {
                 ? settings.arguments as ArtifactType
                 : ArtifactType.dashboard;
             page = ArtifactScreen(initialArtifact: initialArtifact);
-            break;
-
-          case AppRoutes.bgPreview:
-            page = const BgPreviewScreen();
             break;
 
           default:

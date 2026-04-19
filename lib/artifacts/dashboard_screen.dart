@@ -124,37 +124,6 @@ class DashboardScreen extends ConsumerWidget {
 
               // ── Daily tip ──────────────────────────────────────────────
               _TipCard(tip: _tip(user.streakDays)),
-              const SizedBox(height: 14),
-
-              // ── TEMP: Background Picker ────────────────────────────────
-              GestureDetector(
-                onTap: () => Navigator.pushNamed(context, AppRoutes.bgPreview),
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF1A1A2E),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                        color: Colors.white.withOpacity(0.1)),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text('🎨', style: TextStyle(fontSize: 16)),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Preview Background Options',
-                        style: GoogleFonts.inter(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
             ],
           ),
         ),

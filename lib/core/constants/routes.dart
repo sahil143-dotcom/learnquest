@@ -15,5 +15,4 @@ class AppRoutes {
   static const roadmap        = '/roadmap';
   static const artifacts      = '/artifacts';
   static const placementPrep  = '/placement-prep';  // NEW: Placement Prep hub
-  static const bgPreview      = '/bg-preview';      // TEMP: background picker
 }
