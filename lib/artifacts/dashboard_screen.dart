@@ -2,6 +2,7 @@
 // Daily Dashboard — native Flutter, matches the app's glass/gradient UI.
 // Hero feature: animated water-fill container showing XP level progress.
 
+import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -911,11 +912,13 @@ class _QuoteBannerState extends State<_QuoteBanner>
   late Animation<double> _fade;
   late AnimationController _slideCtrl;
   late Animation<Offset> _slide;
+  Timer? _timer;
+
   @override
   void initState() {
     super.initState();
 
-    // Seed by day-of-year — same quote all day, different tomorrow
+    // Seed by day-of-year so the quote feels fresh each day
     final dayOfYear = DateTime.now().difference(
         DateTime(DateTime.now().year)).inDays;
     _index = dayOfYear % _quotes.length;
@@ -933,10 +936,22 @@ class _QuoteBannerState extends State<_QuoteBanner>
 
     _fadeCtrl.forward();
     _slideCtrl.forward();
+
+    _timer = Timer.periodic(const Duration(seconds: 8), (_) => _next());
+  }
+
+  Future<void> _next() async {
+    await _fadeCtrl.reverse();
+    if (!mounted) return;
+    setState(() => _index = (_index + 1) % _quotes.length);
+    _slideCtrl.reset();
+    _fadeCtrl.forward();
+    _slideCtrl.forward();
   }
 
   @override
   void dispose() {
+    _timer?.cancel();
     _fadeCtrl.dispose();
     _slideCtrl.dispose();
     super.dispose();
